@@ -34,8 +34,8 @@ vows.describe('pkgcloud/azure/databases').addBatch({
       "with correct options": {
         topic: function () {
           client.create({
-            dbUsername: 'testing',
-            dbPassword: 'testing123!!',
+            dbUsername: 'testdb',
+            dbPassword: 'Testing!!',
             dbLocation: 'North Central US'
           }, this.callback);
         },

@@ -1,5 +1,5 @@
 /*
- * databases-test.js: Tests for azure tables databases service
+ * azureTables-test.js: Tests for azure tables databases service
  *
  * (C) Microsoft Open Technologies, Inc.
  *

@@ -3,15 +3,15 @@ var pkgcloud = require('../../lib/pkgcloud');
 var client = pkgcloud.database.createClient({
   provider: 'azure',
   dbType: 'AZURE_SQL',
-  "managementCertificate": "./test/fixtures/azure/cert/management/management.pem",
+  "managementCertificate": "path to your management certificate pem file",
   "subscriptionId": "azure-account-subscription-id"
 });
 
 //
 // required Azure SQL Server options
 var options = {
-  dbUsername: 'testing123',
-  dbPassword: 'testing123!!',
+  dbUsername: 'testdb',
+  dbPassword: 'Testing!!',
   dbLocation: 'North Central US'
 };
 

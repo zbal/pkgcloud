@@ -3,8 +3,8 @@ var pkgcloud = require('../../lib/pkgcloud');
 var client = pkgcloud.database.createClient({
   provider: 'azure',
   dbType: 'AZURE_SQL',
-  "managementCertificate": "path to your management certificate pem file",
-  "subscriptionId": "azure-account-subscription-id"
+  managementCertificate: "path to your management certificate pem file",
+  subscriptionId: "azure-account-subscription-id"
 });
 
 //

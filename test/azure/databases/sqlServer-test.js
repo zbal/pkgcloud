@@ -11,29 +11,32 @@ var vows    = require('vows'),
     nock    = require('nock');
 
 var config = helpers.loadConfig('azure');
-config.dbType = 'AZURE_SQL'
+config.dbType= 'AZURE_SQL'
 
 var client = helpers.createClient('azure', 'database', config),
     testContext = {};
 
 if (process.env.NOCK) {
-  nock('http://test-storage-account.table.core.windows.net')
+
+  nock('https://management.database.windows.net:8443')
     .filteringRequestBody(/.*/, '*')
-    .post('/Tables', '*')
-    .reply(201, helpers.loadFixture('azure/database/createTableResponse.xml'))
-    .get('/Tables')
-    .reply(201, helpers.loadFixture('azure/database/listTables.xml'))
-    .delete("/Tables%28%27testDatabase%27%29")
-    .reply(204, "", {'content-length': '0'});
+    .post('/azure-account-subscription-id/servers', '*')
+    .reply(201, '﻿<ServerName xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">npm0lusisu</ServerName>')
+    .get('/azure-account-subscription-id/servers')
+    .reply(200, '﻿<Servers xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">\r\n  <Server>\r\n    <Name>npm0lusisu</Name>\r\n    <AdministratorLogin>foo</AdministratorLogin>\r\n    <Location>North Central US</Location>\r\n  </Server>\r\n</Servers>')
+    .delete("/azure-account-subscription-id/servers/npm0lusisu")
+    .reply(200, "", {'content-length': '0'});
 }
 
 vows.describe('pkgcloud/azure/databases').addBatch({
-  "The pkgcloud azure client": {
+  "The pkgcloud azure SQL Server client": {
     "the create() method": {
       "with correct options": {
         topic: function () {
           client.create({
-            name: 'testDatabase'
+            dbUsername: 'foo',
+            dbPassword: 'apple13!!',
+            dbLocation:'North Central US'
           }, this.callback);
         },
         "should respond correctly": function (err, database) {

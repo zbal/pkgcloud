@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><Server xmlns="http://schemas.microsoft.com/sqlazure/2010/12/"><AdministratorLogin><%= username %></AdministratorLogin><AdministratorLoginPassword><%= password %></AdministratorLoginPassword><Location><%= location %></Location></Server>

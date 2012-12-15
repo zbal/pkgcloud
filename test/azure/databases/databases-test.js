@@ -10,7 +10,10 @@ var vows    = require('vows'),
     assert  = require('../../helpers/assert'),
     nock    = require('nock');
 
-var client = helpers.createClient('azure', 'database'),
+var config = helpers.loadConfig('azure');
+config.dbType = 'AZURE_SQL'
+
+var client = helpers.createClient('azure', 'database', config),
     testContext = {};
 
 if (process.env.NOCK) {
@@ -37,8 +40,6 @@ vows.describe('pkgcloud/azure/databases').addBatch({
           assert.isNull(err);
           assert.ok(database.id);
           assert.ok(database.uri);
-          assert.equal(database.username, '');
-          assert.equal(database.password, '');
           testContext.databaseId = database.id;
         }
       },

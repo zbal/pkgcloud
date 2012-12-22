@@ -14,7 +14,8 @@ var config = helpers.loadConfig('azure');
 config.dbType= 'AZURE_TABLE'
 
 var client = helpers.createClient('azure', 'database', config),
-    testContext = {};
+    testContext = {},
+    options;
 
 if (process.env.NOCK) {
   nock('http://test-storage-account.table.core.windows.net')
@@ -79,7 +80,8 @@ vows.describe('pkgcloud/azure/databases').addBatch({
     "the remove() method": {
       "with correct options": {
         topic: function () {
-          client.remove(testContext.databaseId, this.callback);
+          options = {id: testContext.databaseId};
+          client.remove(options, this.callback);
         },
         "should respond correctly": function (err, result) {
           assert.isNull(err);
@@ -91,7 +93,15 @@ vows.describe('pkgcloud/azure/databases').addBatch({
           client.remove(this.callback);
         },
         "should respond with errors": assert.assertError
-      }
+      },
+      "without server id option": {
+         topic: function () {
+           options = {};
+           client.remove(options, this.callback);
+         },
+         "should respond with errors": assert.assertError
+       }
+
     }
   }
 }).export(module);

@@ -31,6 +31,24 @@ if (process.env.NOCK) {
     .reply(200, '﻿<Servers xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">\r\n  <Server>\r\n    <Name>npm0lusisu</Name>\r\n    <AdministratorLogin>foo</AdministratorLogin>\r\n    <Location>North Central US</Location>\r\n  </Server>\r\n</Servers>')
     .delete("/azure-account-subscription-id/servers/npm0lusisu")
     .reply(200, "", {'content-length': '0'});
+
+  // sql server firewall rules
+  nock('https://management.database.windows.net:8443')
+    .post('/azure-account-subscription-id/servers/npm0lusisu/firewallrules/ipDetectRuleName?op=AutoDetectClientIP')
+    .reply(200, "﻿<IpAddress xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">98.232.61.224</IpAddress>", {})
+    .get('/azure-account-subscription-id/servers/npm0lusisu/firewallrules')
+    .reply(200, "﻿<FirewallRules xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">\r\n  <FirewallRule>\r\n    <Name>ipDetectRuleName</Name>\r\n    <StartIpAddress>98.232.61.224</StartIpAddress>\r\n    <EndIpAddress>98.232.61.224</EndIpAddress>\r\n  </FirewallRule>\r\n</FirewallRules>", {})
+    .delete('/azure-account-subscription-id/servers/npm0lusisu/firewallrules/ipDetectRuleName')
+    .reply(200, "", { })
+    .get('/azure-account-subscription-id/servers/npm0lusisu/firewallrules')
+    .reply(200, "﻿<FirewallRules xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\" />", {})
+    .put('/azure-account-subscription-id/servers/npm0lusisu/firewallrules/testRuleName', "<?xml version=\"1.0\" encoding=\"utf-8\"?><FirewallRule xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://schemas.microsoft.com/sqlazure/2010/12/ FirewallRule.xsd\"><StartIpAddress>192.168.1.1</StartIpAddress><EndIpAddress>192.168.1.2</EndIpAddress></FirewallRule>")
+    .reply(200, "",  {})
+    .get('/azure-account-subscription-id/servers/npm0lusisu/firewallrules')
+    .reply(200, "﻿<FirewallRules xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">\r\n  <FirewallRule>\r\n    <Name>testRuleName</Name>\r\n    <StartIpAddress>192.168.1.1</StartIpAddress>\r\n    <EndIpAddress>192.168.1.2</EndIpAddress>\r\n  </FirewallRule>\r\n</FirewallRules>", {});
+
+
+
 }
 
 vows.describe('pkgcloud/azure/databases').addBatch({

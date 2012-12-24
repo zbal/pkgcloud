@@ -42,7 +42,7 @@ if (process.env.NOCK) {
     .reply(200, "", { })
     .get('/azure-account-subscription-id/servers/npm0lusisu/firewallrules')
     .reply(200, "﻿<FirewallRules xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\" />", {})
-    .put('/azure-account-subscription-id/servers/npm0lusisu/firewallrules/testRuleName', "<?xml version=\"1.0\" encoding=\"utf-8\"?><FirewallRule xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://schemas.microsoft.com/sqlazure/2010/12/ FirewallRule.xsd\"><StartIpAddress>192.168.1.1</StartIpAddress><EndIpAddress>192.168.1.2</EndIpAddress></FirewallRule>")
+    .put('/azure-account-subscription-id/servers/npm0lusisu/firewallrules/testRuleName', '<?xml version=\"1.0\" encoding=\"utf-8\"?><FirewallRule xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://schemas.microsoft.com/sqlazure/2010/12/FirewallRule.xsd\"><StartIpAddress>192.168.1.1</StartIpAddress><EndIpAddress>192.168.1.2</EndIpAddress></FirewallRule>')
     .reply(200, "",  {})
     .get('/azure-account-subscription-id/servers/npm0lusisu/firewallrules')
     .reply(200, "﻿<FirewallRules xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">\r\n  <FirewallRule>\r\n    <Name>testRuleName</Name>\r\n    <StartIpAddress>192.168.1.1</StartIpAddress>\r\n    <EndIpAddress>192.168.1.2</EndIpAddress>\r\n  </FirewallRule>\r\n</FirewallRules>", {});
@@ -196,7 +196,7 @@ vows.describe('pkgcloud/azure/databases').addBatch({
               id: testContext.databaseId,
               ruleName: TEST_RULE_NAME,
               startIpAddress: TEST_IP_ADDRESS_START,
-              endIpAddress: TEST_IP_ADDRESS_END,
+              endIpAddress: TEST_IP_ADDRESS_END
             };
             client.createServerFirewallRule(options, this.callback);
           },

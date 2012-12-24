@@ -1,5 +1,8 @@
 var pkgcloud = require('../../lib/pkgcloud');
 
+//
+// create an Azure SQL server pkgcloud client
+//
 var client = pkgcloud.database.createClient({
   provider: 'azure',
   dbType: 'AZURE_SQL',
@@ -38,11 +41,13 @@ client.create(options, function (err, result) {
 });
 
 //
-// Use the tedious Node TDS module for connecting to Azure SQL Server databases
-// to create, query, insert, update, merge, and delete SQL entities.
+// Use the tedious Node TDS module for connecting to Azure SQL Servers
+// to create databases and tables, query, insert, update, merge, and delete SQL entities.
 // For more info: https://github.com/pekim/tedious
 //
-// or for a Windows only solution use the Microsoft Driver for Node.js for SQL Server
+// or...
+//
+// For a Windows only solution use the Microsoft Driver for Node.js for SQL Server
 // https://github.com/WindowsAzure/node-sqlserver
 //
 

@@ -22,7 +22,6 @@ var client = helpers.createClient('azure', 'database', config),
   testContext = {};
 
 if (process.env.NOCK) {
-
   nock('https://management.database.windows.net:8443')
     .filteringRequestBody(/.*/, '*')
     .post('/azure-account-subscription-id/servers', '*')
@@ -46,9 +45,6 @@ if (process.env.NOCK) {
     .reply(200, "",  {})
     .get('/azure-account-subscription-id/servers/npm0lusisu/firewallrules')
     .reply(200, "﻿<FirewallRules xmlns=\"http://schemas.microsoft.com/sqlazure/2010/12/\">\r\n  <FirewallRule>\r\n    <Name>testRuleName</Name>\r\n    <StartIpAddress>192.168.1.1</StartIpAddress>\r\n    <EndIpAddress>192.168.1.2</EndIpAddress>\r\n  </FirewallRule>\r\n</FirewallRules>", {});
-
-
-
 }
 
 vows.describe('pkgcloud/azure/databases').addBatch({

@@ -160,7 +160,7 @@ vows.describe('pkgcloud/azure/databases').addBatch({
           },
           "should respond correctly": function (err, result) {
             assert.isNull(err);
-            assert.ok(result);
+            assert.equal(result.statusCode,200);
           }
         },
         "without options": {
@@ -252,7 +252,7 @@ vows.describe('pkgcloud/azure/databases').addBatch({
           },
           "should respond correctly": function (err, result) {
             assert.isNull(err);
-            assert.equal(result, true);
+            assert.equal(result.statusCode,200);
           }
         },
         "without options": {

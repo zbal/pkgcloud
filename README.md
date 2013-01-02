@@ -88,6 +88,8 @@ Supporting every API for every cloud service provider in Node.js is a huge under
   * [Rackspace](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/rackspace.md#database)
   * [MongoHQ](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/mongohq.md)
   * [RedisToGo](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/redistogo.md)
+  * [Azure Tables](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/azure#using-databases)
+  * [Azure SQL Server](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/azure#using-databases-sql)
   
 <a name="compute"></a>
 ## Compute
@@ -240,7 +242,9 @@ Each database provider takes different credentials to authenticate; these detail
 * **MySQL**
   * [Rackspace](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/rackspace.md#database)
 * **Azure Tables**
-  * [Azure](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/azure.md#database)
+  * [Azure Tables](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/azure.md#using-databases)
+* **Azure SQL Server**
+  * [Azure SQL Server](https://github.com/nodejitsu/pkgcloud/blob/master/docs/providers/azure.md#using-databases-sql)
 
 Due to the various differences in how these DBaaS providers provision databases only a small surface area of the API for instances of `pkgcloud.database.Client` returned from `pkgcloud.database.createClient` is consistent across all providers:
 

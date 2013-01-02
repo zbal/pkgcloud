@@ -8,6 +8,8 @@
   * [Azure Management Certificates](#azure-manage-cert)
   * [Azure SSH Certificates](#azure-ssh-cert)
 * [Using Databases](#using-databases)
+  * [Azure Tables](#using-databases-tables)
+  * [Azure SQL Server](#using-databases-sql)
 
 <a name="using-compute"></a>
 ## Using Compute
@@ -114,31 +116,31 @@
 
 ### Create an Azure Service Management certificate on Linux/Mac OSX:
 
-1. Create rsa private key
+Create rsa private key.
 ``` bash
 	openssl genrsa -out management.key 2048
 ```
-2. Create self signed certificate
+Create self signed certificate.
 ``` bash
 	openssl req -new -key management.key -out management.csr
 ```
-3. Create temp x509 pem file from rsa key and self signed certificate
+Create temp x509 pem file from rsa key and self signed certificate.
 ``` bash 
 	openssl x509 -req -days 3650 -in management.csr -signkey management.key -out temp.pem
 ```
-4. Create management pem from temp pem file and rsa key file. This will be the managementCertificate file used by the compute client in pkgcloud.
+Create management pem from temp pem file and rsa key file. This will be the managementCertificate file used by the compute client in pkgcloud.
 ``` bash
 	cat management.key temp.pem > management.pem. 
 ```
-5. Create management pfx
+Create management pfx.
 ``` bash
 	openssl pkcs12 -export -out management.pfx -in temp.pem -inkey management.key -name "My Certificate"
 ```
-6. Create management cer. This will be the managementCertificate .cer file you need to upload to the [Management Certificates section](https://manage.windowsazure.com/#Workspace/AdminTasks/ListManagementCertificates) of the Azure portal. 
+Create management cer. This will be the managementCertificate .cer file you need to upload to the [Management Certificates section](https://manage.windowsazure.com/#Workspace/AdminTasks/ListManagementCertificates) of the Azure portal. 
 ``` bash
     openssl x509 -inform pem -in management.pem -outform der -out management.cer
 ```
-7. Secure files
+Secure files.
 ``` bash
 	chmod 600 *.*
 ```
@@ -178,13 +180,17 @@ For more information about this [read the article on MSDN:](http://msdn.microsof
 
 For more info: https://www.windowsazure.com/en-us/manage/linux/how-to-guides/ssh-into-linux/
 
+<br>
 <a name="using-databases"></a>
 ## Using Databases
+<a name="using-databases-tables"></a>
+### Azure Tables
 Azure Tables is available in `pkgcloud` as a `pkgcloud.databases` target. Here is an example of how to use it:
 
 ``` js
   var client = pkgcloud.database.createClient({
     provider: 'azure',
+    dbType: 'AZURE_TABLE',						// create Azure Table database client
     storageAccount: "test-storage-account",		// Name of your Azure storage account
     storageAccessKey: "test-storage-access-key" // Access key for storage account
   });
@@ -214,8 +220,153 @@ Azure Tables is available in `pkgcloud` as a `pkgcloud.databases` target. Here i
 
 The `client` instance returned by `pkgcloud.database.createClient` has the following methods for Azure Tables:
 
-* `client.create(options, callback)`
-* `client.remove(id, callback)`
-* `client.list(callback)	// lists all of the Tables in your Azure Storage account`
+###client.create(options, callback)
+Create a new Azure Table
+#####options
+* name: name of the table.
+
+###client.remove(options, callback)
+Delete an Azure Table
+#####options
+* id: id of the table.
+
+###client.list(callback)
+Lists all of the Tables in your Azure Storage account.
+#####callback
+returns an array of Azure Tables.
 
 Use the azure-sdk-for-node to create, query, insert, update, merge, and delete Table entities. For more info: https://github.com/WindowsAzure/azure-sdk-for-node
+
+<br>
+<a name="using-databases-sql"></a>
+### Azure SQL Server
+Azure SQL Server is available in `pkgcloud` as a `pkgcloud.databases` target. Using the pkgcloud database API you will be able to create, list and delete Azure SQL Servers. You will also be able to create, list and delete firewall rules to enable access to the SQL server from specific IP addresses. Here is an example of how to use it:
+
+``` js
+//
+// create an Azure SQL server pkgcloud client
+//
+var client = pkgcloud.database.createClient({
+  provider: 'azure',
+  dbType: 'AZURE_SQL',
+  cert: "path to your management certificate pem file",
+  subscriptionId: "azure-account-subscription-id"
+});
+
+//
+// required Azure SQL Server options
+var options = {
+  dbUsername: 'testdb',		//admin username for the SQL Server
+  dbPassword: 'Testing!!',	// admin password for the SQL Server
+  dbLocation: 'North Central US' // Azure location for the server
+};
+
+//
+// Create an Azure SQL Server
+//
+client.create(options, function (err, result) {
+  //
+  // Check the result
+  //
+  console.log(err, result);
+
+  //
+  // Now delete that same Azure SQL Server
+  //
+  if (err === null) {
+    client.remove(result.id, function (err, result) {
+      //
+      // Check the result
+      //
+      console.log(err, result);
+    });
+  }
+});
+```
+
+The `client` instance returned by `pkgcloud.database.createClient` has the following methods for Azure Tables:
+
+####client.create(options, callback)
+Create a new Azure SQL Server
+#####options
+* dbUsername: Admin username for the SQL Server.
+* dbPassword: Admin password for the SQL Server.
+* dbLocation: Azure location for the server Valid Locations for Azure SQL Servers are: North Central US | South Central US | North Europe | West Europe | East Asia | Southeast Asia
+
+
+####client.remove(options, callback)
+Deletes an Azure SQL server **Note: all databases on the SQL server will be deleted
+**
+
+#####options
+* id: the id of the SQL Server to remove. **Note: all databases on the SQL server will be deleted
+**
+
+
+####client.list(callback)	
+lists all of the SQL Servers in your Azure account
+
+###SQL Server Firewall Rules
+The pkgcloud Azure SQL Server database client also supports the creation of firewall rules that allow access to the SQL server from specified IP addresses. See <a href = "http://msdn.microsoft.com/en-us/library/windowsazure/gg715276.aspx">Azure SQL Server Firewall Rules</a> for more information. pkgcloud implements the following methods:
+
+####client.createServerFirewallRuleWithIPDetect(options, callback) 
+Creates an Azure SQL Server firewall rule using IP autodetect.
+The createServerFirewallRuleWithIPDetect method adds a new server-level firewall rule or updates an existing server-level firewall rule for a SQL Database server with requester’s IP address. This is useful when a user does not know his/her external IP address due to address translation, proxy servers, etc.
+
+#####options
+
+* id: id of the SQL server (required)
+* ruleName: name to assign to the new firewall rule.
+
+#####callback
+* err: null if no error, otherwise Error object
+* result: result object containing the following properties:
+	* ipAddress: the IP address detected by IP autodetect.
+	* ruleName: name assigned to the new firewall rule.
+	* statusCode: resultCode of request. Should be 200.
+
+####client.createServerFirewallRule(options, callback) 
+Creates an Azure SQL Server firewall rule. The createServerFirewallRule method updates an existing server-level firewall rule or adds a new server-level firewall rule for a SQL Database server that belongs to a subscription. A firewall rule with the start and end IP addresses set to 0.0.0.0 is a rule that allows connections to the server from Windows Azure related applications and services.
+
+#####options
+
+* id: id of the SQL server (required)
+* ruleName: name to assign to the new firewall rule.
+* startIpAddress: starting IP address for the new firewall rule.
+* endIpAddress: ending IP address for the new firewall rule.
+
+#####callback
+* err: null if no error, otherwise Error object
+* result: result object containing the following properties:
+	* statusCode: resultCode of request. Should be 200.
+
+####client.listServerFirewallRules(options, callback) 
+The listServerFirewallRules method retrieves a list of all the server-level firewall rules for a SQL Database server that belongs to a subscription.
+
+#####options
+
+* id: id of the SQL server (required)
+
+#####callback
+* err: null if no error, otherwise Error object
+* result: contains an array of firewall rules. Each object in the array contains a firewall rule object with the following properties:
+	* ruleName: name of the firewall rule
+	* serverId: id of the SQL server
+	* startIpAddress: the starting IP address of the rule
+	* endIpAddress: the ending IP address of the rule
+
+####client.deleteFirewallRule(options, callback) 
+Delete an Azure SQL Server firewall rule from a SQL Server. The deleteFirewallRule method deletes a server-level firewall rule from a SQL Database server that belongs to a subscription.
+
+#####options
+* id: id of the SQL server 
+* ruleName: name of the firewall rule to delete from the server
+
+#####callback
+* err: null if no error, otherwise Error object
+* result: result object containing the following properties:
+	* statusCode: resultCode of request. Should be 200.
+
+<br>
+Use the <a href="https://github.com/pekim/tedious">Node TDS module</a>
+for connecting to SQL Server databases. The Tedious node module will allow you to create, list and delete databases and tables and also create, query, insert, update, merge, and delete entities. For a Windows only solution use the <a href="https://github.com/WindowsAzure/node-sqlserver">Windows Azure node-sqlserver</a> module. 
